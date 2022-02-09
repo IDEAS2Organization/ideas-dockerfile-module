@@ -1,0 +1,21 @@
+{
+		"id": "ideas-dockerfile-language",
+		"extension": "dockerfile",
+		"apiVersion": 1.0,
+		"name": "Dockerfile Language",
+		"formats": [
+			 {
+				"format": "Dockerfile_format",
+				"editorModeId": "ace/mode/dockerfile",
+				"_editorModeURI": "mode-dockerfile.js",                         
+				"editorThemeId": "ace/theme/eclipse",
+				"_editorThemeURI": "theme-dockerfile.js",
+				 "checkLanguage": "true" 
+			 }
+		],
+				 
+				"operations": [],
+				"templateProjects":null,
+   				"templateFiles":null,
+				"inspectorLoader": "function(loader, format) {}"
+}
