@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 
 
 @Controller
-@RequestMapping("/ideas-plaintext-language/language")
+@RequestMapping("/ideas-dockerfile-language/language")
 public class DockerfileLanguageController extends BaseLanguageController {
 
 	@RequestMapping(value = "/format/{format}/checkLanguage", method = RequestMethod.POST)
