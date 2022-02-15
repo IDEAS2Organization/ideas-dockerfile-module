@@ -14,7 +14,12 @@
 			 }
 		],
 				 
-				"operations": [],
+				"operations": [{
+					"id": "build",
+					"name": "Build image",
+					"data": {},
+					"_remoteExecution": "true",
+					"action":""}],
 				"templateProjects":null,
    				"templateFiles":null,
 				"inspectorLoader": "function(loader, format) {}"

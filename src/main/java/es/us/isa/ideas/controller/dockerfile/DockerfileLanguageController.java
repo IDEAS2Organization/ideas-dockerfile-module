@@ -50,6 +50,9 @@ public class DockerfileLanguageController extends BaseLanguageController {
         @Override
 	public AppResponse executeOperation(String id, String content, String fileUri, String auxArg0,HttpServletRequest request) {
 		AppResponse appResponse = new AppResponse();
+		if(id.equals("build")){
+			System.out.println("e");
+		}
 		return appResponse;
 	}
 	
