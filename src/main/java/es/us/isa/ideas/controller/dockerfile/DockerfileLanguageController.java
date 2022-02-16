@@ -123,7 +123,7 @@ public class DockerfileLanguageController extends BaseLanguageController {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b>Execution duration:</b>" + duration + " ms<br>\n");
 
-		builder.append("<h3>Latex compilation output:</h3>\n");
+		builder.append("<h3>Operation output:</h3>\n");
 		builder.append("<p><pre>" + output + "</pre></p>\n");
 
 		if (!errors.equals("")) {
