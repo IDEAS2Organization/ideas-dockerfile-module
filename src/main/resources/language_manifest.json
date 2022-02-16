@@ -18,8 +18,7 @@
 					"id": "build",
 					"name": "Build image",
 					"data": {},
-					"_remoteExecution": "true",
-					"action":""}],
+					"_remoteExecution": "true"}],
 				"templateProjects":null,
    				"templateFiles":null,
 				"inspectorLoader": "function(loader, format) {}"
