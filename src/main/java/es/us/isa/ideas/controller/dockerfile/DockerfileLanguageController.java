@@ -72,18 +72,18 @@ public class DockerfileLanguageController extends BaseLanguageController {
 				fw.write(content);
 				fw.close();
 
-
 				String[] splits = fileUri.split("/");
 				Integer splitLength = splits.length;
-				String imageName = splits[splitLength-1].split(".dockerfile")[0];
+				String imageName = splits[splitLength - 1].split(".dockerfile")[0];
 				String message = executeCommand("docker build -t " + imageName + " .", "/dockerfiles");
-				
+
 				tmpDockerfile.delete();
-				
+
 				appResponse.setHtmlMessage(message);
 				appResponse.setStatus(Status.OK);
 			} catch (IOException e) {
-				appResponse.setHtmlMessage("<h1>An error has ocurred. </h1><br><b><pre>" + e.toString() + "'</pre></b>");
+				appResponse
+						.setHtmlMessage("<h1>An error has ocurred. </h1><br><b><pre>" + e.toString() + "'</pre></b>");
 				appResponse.setStatus(Status.OK_PROBLEMS); // Si se pone Status.ERRORS no muestra el mensaje HTML
 			}
 		}
