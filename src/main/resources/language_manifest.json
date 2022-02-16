@@ -15,10 +15,30 @@
 		],
 				 
 				"operations": [{
-					"id": "build",
-					"name": "Build image",
-					"data": {},
-					"_remoteExecution": "true"}],
+						"id": "build",
+						"name": "Build image",
+						"data": {},
+						"_remoteExecution": "true"
+					},
+					{
+						"id": "delete",
+						"name": "Delete image",
+						"data": {},
+						"_remoteExecution": "true"	
+					},
+					{
+						"id": "showImages",
+						"name": "Show images",
+						"data": {},
+						"_remoteExecution": "true"	
+					},
+					{
+						"id": "showAllContainers",
+						"name": "Show all containers",
+						"data": {},
+						"_remoteExecution": "true"	
+					}	
+					],
 				"templateProjects":null,
    				"templateFiles":null,
 				"inspectorLoader": "function(loader, format) {}"
