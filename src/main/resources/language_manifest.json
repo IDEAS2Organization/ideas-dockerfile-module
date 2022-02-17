@@ -18,7 +18,8 @@
 						"id": "build",
 						"name": "Build image",
 						"data": {},
-						"_remoteExecution": "true"
+						"_remoteExecution": "false",
+						"action": "function build(o,e){try{var r={};operationId=o.id,r.fileUri=e,r.content=EditorManager.getEditorContentByUri(e),r.id=operationId,r.auxArg0=principalUser,operationUri=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(e)))+DEPRECATED_EXEC_OP_URI.replace('$operationId',operationId),RequestHelper.ajax(operationUri,{type:'POST',data:r,onSuccess:function(o){console.log('onSuccess'),console.log(operationUri)},onProblems:function(o){console.log('onProblems')}})}catch(o){console.error(o)}}"
 					},
 					{
 						"id": "delete",
