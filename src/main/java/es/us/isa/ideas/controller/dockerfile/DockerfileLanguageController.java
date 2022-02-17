@@ -56,7 +56,7 @@ public class DockerfileLanguageController extends BaseLanguageController {
 			HttpServletRequest request) {
 		AppResponse appResponse = new AppResponse();
 		if (id.equals("build")) {
-			operations.buildImage(content, fileUri, appResponse);
+			operations.buildImage(content, fileUri, request.getParameter("imageName"), appResponse);
 		} else if (id.equals("delete")) {
 			operations.deleteImage(content, fileUri, appResponse);
 		} else if(id.equals("showImages")) {
