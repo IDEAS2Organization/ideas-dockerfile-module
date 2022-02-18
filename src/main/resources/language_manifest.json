@@ -19,7 +19,7 @@
 						"name": "Build image",
 						"data": {},
 						"_remoteExecution": "false",
-						"action": "function build(e,o){try{function a(){$(\"#appGenericModal\").attr(\"style\",\"display: none;\"),$(\"#appGenericModal\").attr(\"class\",\"modal\"),$(\"#appGenericModal\").attr(\"aria-hidden\",\"true\"),$(\".modal-backdrop\").remove()}operationId=e.id;var r={};r.fileUri=o,r.content=EditorManager.getEditorContentByUri(o),r.id=operationId,r.auxArg0=principalUser,operationUri=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(o)))+DEPRECATED_EXEC_OP_URI.replace(\"$operationId\",operationId),\"build\"===operationId&&showModal(\"Introduce nombre\",\"<input id='name'/>    \",\"Construir\",function(){var o,e;imageName=$(\"#name\").val(),r.imageName=imageName,o=operationUri,e=r,RequestHelper.ajax(o,{type:\"POST\",data:e,onSuccess:function(e){console.log(\"onSuccess\"),console.log(o)},onProblems:function(e){console.log(\"onProblems\")}}),a()},a,\"\")}catch(e){console.error(e)}}"
+						"action": "function b(e,a){var t=document.createElement(\"script\");t.type=\"application/javascript\",t.text=\"var operationStructure = \"+JSON.stringify(e)+\";var fileUri = '\"+a+\"';\",document.body.appendChild(t);t=document.createElement(\"script\");t.type=\"application/javascript\",t.src=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(a)))+\"/language/operation/\"+e.id+\"/javascript\",document.body.appendChild(t)}"
 					},
 					{
 						"id": "delete",

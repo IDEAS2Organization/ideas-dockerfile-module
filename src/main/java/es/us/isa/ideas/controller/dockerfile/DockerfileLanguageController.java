@@ -1,6 +1,9 @@
 package es.us.isa.ideas.controller.dockerfile;
 
+import org.mockito.internal.util.io.IOUtil;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -9,7 +12,16 @@ import es.us.isa.ideas.module.common.AppResponse;
 import es.us.isa.ideas.module.common.AppResponse.Status;
 import es.us.isa.ideas.module.controller.BaseLanguageController;
 
+import static org.apache.commons.io.IOUtils.copy;
+
+import java.io.File;
+import java.io.IOError;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 @Controller
@@ -46,6 +58,22 @@ public class DockerfileLanguageController extends BaseLanguageController {
 			HttpServletRequest request) {
 		AppResponse appResponse = new AppResponse();
 
+		return appResponse;
+	}
+
+	@RequestMapping(value = "/operation/{id}/javascript", method = RequestMethod.GET)
+	@ResponseBody
+	public AppResponse getJavascriptFile(@PathVariable(value="id") String id, HttpServletResponse response) {
+		AppResponse appResponse = new AppResponse();
+		try{
+			InputStream jsFile = new ClassPathResource("actions/" + id + ".js").getInputStream();
+			OutputStream os = response.getOutputStream();
+			os.write(jsFile.readAllBytes());
+			response.setContentType("application/javascript");
+			os.close();
+		}catch(IOException e){
+			operations.generateAppResponseError(appResponse, e);
+		}
 		return appResponse;
 	}
 
