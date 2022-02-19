@@ -22,10 +22,11 @@
 						"action": "function b(e,a){var t=document.createElement(\"script\");t.type=\"application/javascript\",t.text=\"var operationStructure = \"+JSON.stringify(e)+\";var fileUri = '\"+a+\"';\",document.body.appendChild(t);t=document.createElement(\"script\");t.type=\"application/javascript\",t.src=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(a)))+\"/language/operation/\"+e.id+\"/javascript\",document.body.appendChild(t)}"
 					},
 					{
-						"id": "delete",
+						"id": "delete_image",
 						"name": "Delete image",
 						"data": {},
-						"_remoteExecution": "true"	
+						"_remoteExecution": "false",
+						"action": "function b(e,a){var t=document.createElement(\"script\");t.type=\"application/javascript\",t.text=\"var operationStructure = \"+JSON.stringify(e)+\";var fileUri = '\"+a+\"';\",document.body.appendChild(t);t=document.createElement(\"script\");t.type=\"application/javascript\",t.src=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(a)))+\"/language/operation/\"+e.id+\"/javascript\",document.body.appendChild(t)}"	
 					},
 					{
 						"id": "showImages",
@@ -38,7 +39,28 @@
 						"name": "Show all containers",
 						"data": {},
 						"_remoteExecution": "true"	
-					}	
+					},
+					{
+						"id": "run",
+						"name": "Start container",
+						"data": {},
+						"_remoteExecution": "false",
+						"action": "function b(e,a){var t=document.createElement(\"script\");t.type=\"application/javascript\",t.text=\"var operationStructure = \"+JSON.stringify(e)+\";var fileUri = '\"+a+\"';\",document.body.appendChild(t);t=document.createElement(\"script\");t.type=\"application/javascript\",t.src=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(a)))+\"/language/operation/\"+e.id+\"/javascript\",document.body.appendChild(t)}"		
+					},
+					{
+						"id": "stop",
+						"name": "Stop container",
+						"data": {},
+						"_remoteExecution": "false",
+						"action": "function b(e,a){var t=document.createElement(\"script\");t.type=\"application/javascript\",t.text=\"var operationStructure = \"+JSON.stringify(e)+\";var fileUri = '\"+a+\"';\",document.body.appendChild(t);t=document.createElement(\"script\");t.type=\"application/javascript\",t.src=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(a)))+\"/language/operation/\"+e.id+\"/javascript\",document.body.appendChild(t)}"		
+					},
+					{
+						"id": "delete_container",
+						"name": "Delete container",
+						"data": {},
+						"_remoteExecution": "false",
+						"action": "function b(e,a){var t=document.createElement(\"script\");t.type=\"application/javascript\",t.text=\"var operationStructure = \"+JSON.stringify(e)+\";var fileUri = '\"+a+\"';\",document.body.appendChild(t);t=document.createElement(\"script\");t.type=\"application/javascript\",t.src=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(a)))+\"/language/operation/\"+e.id+\"/javascript\",document.body.appendChild(t)}"		
+					}		
 					],
 				"templateProjects":null,
    				"templateFiles":null,

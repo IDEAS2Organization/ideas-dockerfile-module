@@ -1,6 +1,5 @@
 package es.us.isa.ideas.controller.dockerfile;
 
-import org.mockito.internal.util.io.IOUtil;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,10 +11,6 @@ import es.us.isa.ideas.module.common.AppResponse;
 import es.us.isa.ideas.module.common.AppResponse.Status;
 import es.us.isa.ideas.module.controller.BaseLanguageController;
 
-import static org.apache.commons.io.IOUtils.copy;
-
-import java.io.File;
-import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -85,12 +80,18 @@ public class DockerfileLanguageController extends BaseLanguageController {
 		AppResponse appResponse = new AppResponse();
 		if (id.equals("build")) {
 			operations.buildImage(content, fileUri, request.getParameter("imageName"), appResponse);
-		} else if (id.equals("delete")) {
-			operations.deleteImage(content, fileUri, appResponse);
+		} else if (id.equals("delete_image")) {
+			operations.deleteImage(request.getParameter("imageName"), appResponse);
 		} else if(id.equals("showImages")) {
 			operations.showImages(appResponse);
 		} else if(id.equals("showAllContainers")) {
 			operations.showAllContainers(appResponse);
+		} else if(id.equals("run")) {
+			operations.run(request.getParameter("imageName"), appResponse);
+		} else if(id.equals("stop")) {
+			operations.stop(request.getParameter("nameOrId"), appResponse);
+		} else if(id.equals("delete_container")) {
+			operations.delete_container(request.getParameter("nameOrId"), appResponse);
 		}
 		return appResponse;
 	}

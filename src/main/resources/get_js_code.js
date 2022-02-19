@@ -13,6 +13,7 @@ function b(operationStructure, fileUri) {
     "';";
   document.body.appendChild(s);
 
+  // Devuelve 'http://localhost:8081/ideas-dockerfile-language/language/operation/$opId/javascript'
   var s1 = document.createElement("script");
   s1.type = "application/javascript";
   s1.src =

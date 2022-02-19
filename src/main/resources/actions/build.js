@@ -29,6 +29,7 @@ try {
   data.id = operationId;
   data.auxArg0 = principalUser;
 
+  // Devuelve 'http://localhost:8081/ideas-dockerfile-language/language/operation/$opId/execute'
   operationUri =
     ModeManager.getBaseUri(
       ModeManager.calculateModelIdFromExt(
@@ -37,9 +38,9 @@ try {
     ) + DEPRECATED_EXEC_OP_URI.replace("$operationId", operationId);
 
   showModal(
-    "Introduce nombre",
+    "Introduce an image's name",
     getNameForm(),
-    "Construir",
+    "Build",
     function () {
       imageName = $("#name").val();
       data.imageName = imageName;

@@ -37,11 +37,8 @@ public class DockerfileOperations {
         }
     }
 
-    public void deleteImage(String content, String fileUri, AppResponse appResponse) {
+    public void deleteImage(String imageName,  AppResponse appResponse) {
         try {
-            String[] splits = fileUri.split("/");
-            Integer splitLength = splits.length;
-            String imageName = splits[splitLength - 1].split(".dockerfile")[0];
             String message = executeCommand("docker rmi " + imageName, "/");
 
             appResponse.setHtmlMessage(message);
@@ -65,6 +62,39 @@ public class DockerfileOperations {
     public void showAllContainers(AppResponse appResponse) {
         try {
             String message = executeCommand("docker ps -a", "/");
+
+            appResponse.setHtmlMessage(message);
+            appResponse.setStatus(Status.OK);
+        } catch (IOException e) {
+            generateAppResponseError(appResponse, e);
+        }
+    }
+
+    public void run(String imageName,  AppResponse appResponse) {
+        try {
+            String message = executeCommand("docker run -d " + imageName, "/");
+
+            appResponse.setHtmlMessage(message);
+            appResponse.setStatus(Status.OK);
+        } catch (IOException e) {
+            generateAppResponseError(appResponse, e);
+        }
+    }
+
+    public void stop(String nameOrId,  AppResponse appResponse) {
+        try {
+            String message = executeCommand("docker stop " + nameOrId, "/");
+
+            appResponse.setHtmlMessage(message);
+            appResponse.setStatus(Status.OK);
+        } catch (IOException e) {
+            generateAppResponseError(appResponse, e);
+        }
+    }
+
+    public void delete_container(String nameOrId,  AppResponse appResponse) {
+        try {
+            String message = executeCommand("docker rm " + nameOrId, "/");
 
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
