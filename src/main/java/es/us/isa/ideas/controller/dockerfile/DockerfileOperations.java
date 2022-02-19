@@ -4,31 +4,26 @@ import es.us.isa.ideas.module.common.AppResponse;
 import es.us.isa.ideas.module.common.AppResponse.Status;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DockerfileOperations {
 
-    public void buildImage(String content, String fileUri, String imageName, AppResponse appResponse) {
+    private String inContainer(String username, String command){
+        return "docker exec -it " + username + " sh -c \"" + command + "\"";
+    }
+
+    public void buildImage(String content, String imageName, String username, AppResponse appResponse) {
         try {
-            Path path = Paths.get("/dockerfiles");
-            Files.createDirectories(path);
+            executeCommand(inContainer(username, "rm Dockerfile"), "/");
+            executeCommand(inContainer(username, "echo '" + content + "' >> Dockerfile"), "/");
 
-            File tmpDockerfile = new File("/dockerfiles/Dockerfile");
-            FileWriter fw = new FileWriter(tmpDockerfile);
-            fw.write(content);
-            fw.close();
-
-            String message = executeCommand("docker build -t " + imageName + " .", "/dockerfiles");
-
-            tmpDockerfile.delete();
+            String message = executeCommand(inContainer(username, "docker build -t " + imageName + " ."), "/");
 
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
@@ -103,7 +98,7 @@ public class DockerfileOperations {
         }
     }
 
-    private String executeCommand(String command, String inputPath) throws IOException {
+    public String executeCommand(String command, String inputPath) throws IOException {
         long start = System.currentTimeMillis();
 
         System.out.println(System.currentTimeMillis() + " - Executing command: '" + command + "' at path: '"

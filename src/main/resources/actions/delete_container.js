@@ -25,7 +25,7 @@ try {
     operationId = operationStructure.id;
     var data = {};
     data.id = operationId;
-    data.auxArg0 = principalUser;
+    data.username = principalUser;
   
     // Devuelve 'http://localhost:8081/ideas-dockerfile-language/language/operation/$opId/execute'
     operationUri =

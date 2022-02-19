@@ -27,7 +27,7 @@ try {
   data.fileUri = fileUri;
   data.content = EditorManager.getEditorContentByUri(fileUri);
   data.id = operationId;
-  data.auxArg0 = principalUser;
+  data.username = principalUser;
 
   // Devuelve 'http://localhost:8081/ideas-dockerfile-language/language/operation/$opId/execute'
   operationUri =

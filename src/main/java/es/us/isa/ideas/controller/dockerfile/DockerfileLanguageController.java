@@ -75,11 +75,21 @@ public class DockerfileLanguageController extends BaseLanguageController {
 	@RequestMapping(value = "/operation/{id}/execute", method = RequestMethod.POST)
 	@ResponseBody
 	@Override
-	public AppResponse executeOperation(String id, String content, String fileUri, String auxArg0,
+	public AppResponse executeOperation(String id, String content, String fileUri, String username,
 			HttpServletRequest request) {
 		AppResponse appResponse = new AppResponse();
+		try{
+			// Si el contenedor está iniciado, el primer comando falla y el segundo no hace nada
+			// Si el contenedor está parado, el primer comando falla y el segundo inicia el contenedor
+			// Si el contenedor no existe, el primer comando lo crea y el segundo no hace nada
+			operations.executeCommand("docker run -d --privileged --name " + username + " docker:dind tail -f /dev/null", "/");
+			operations.executeCommand("docker start " + username, "/");
+		}catch(IOException e){
+			operations.generateAppResponseError(appResponse, e);
+			return appResponse;
+		}
 		if (id.equals("build")) {
-			operations.buildImage(content, fileUri, request.getParameter("imageName"), appResponse);
+			operations.buildImage(content, request.getParameter("imageName"), username, appResponse);
 		} else if (id.equals("delete_image")) {
 			operations.deleteImage(request.getParameter("imageName"), appResponse);
 		} else if(id.equals("showImages")) {
