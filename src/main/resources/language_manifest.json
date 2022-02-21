@@ -32,7 +32,8 @@
 						"id": "showImages",
 						"name": "Show images",
 						"data": {},
-						"_remoteExecution": "true"	
+						"_remoteExecution": "false",
+						"action": "function b(e,a){var t=document.createElement(\"script\");t.type=\"application/javascript\",t.text=\"var operationStructure = \"+JSON.stringify(e)+\";var fileUri = '\"+a+\"';\",document.body.appendChild(t);t=document.createElement(\"script\");t.type=\"application/javascript\",t.src=ModeManager.getBaseUri(ModeManager.calculateModelIdFromExt(ModeManager.calculateExtFromFileUri(a)))+\"/language/operation/\"+e.id+\"/javascript\",document.body.appendChild(t)}"	
 					},
 					{
 						"id": "showAllContainers",

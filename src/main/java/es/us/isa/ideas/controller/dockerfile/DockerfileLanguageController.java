@@ -82,7 +82,7 @@ public class DockerfileLanguageController extends BaseLanguageController {
 			// Si el contenedor está iniciado, el primer comando falla y el segundo no hace nada
 			// Si el contenedor está parado, el primer comando falla y el segundo inicia el contenedor
 			// Si el contenedor no existe, el primer comando lo crea y el segundo no hace nada
-			operations.executeCommand("docker run -d --privileged --name " + username + " docker:dind tail -f /dev/null", "/");
+			operations.executeCommand("docker run -d --privileged --name " + username + " docker:dind dockerd", "/");
 			operations.executeCommand("docker start " + username, "/");
 		}catch(IOException e){
 			operations.generateAppResponseError(appResponse, e);
@@ -93,7 +93,7 @@ public class DockerfileLanguageController extends BaseLanguageController {
 		} else if (id.equals("delete_image")) {
 			operations.deleteImage(request.getParameter("imageName"), appResponse);
 		} else if(id.equals("showImages")) {
-			operations.showImages(appResponse);
+			operations.showImages(username, appResponse);
 		} else if(id.equals("showAllContainers")) {
 			operations.showAllContainers(appResponse);
 		} else if(id.equals("run")) {

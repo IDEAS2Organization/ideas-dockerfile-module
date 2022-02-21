@@ -4,26 +4,38 @@ import es.us.isa.ideas.module.common.AppResponse;
 import es.us.isa.ideas.module.common.AppResponse.Status;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DockerfileOperations {
 
     private String inContainer(String username, String command){
-        return "docker exec -it " + username + " sh -c \"" + command + "\"";
+        return "docker exec " + username + " " + command;
     }
 
     public void buildImage(String content, String imageName, String username, AppResponse appResponse) {
         try {
-            executeCommand(inContainer(username, "rm Dockerfile"), "/");
-            executeCommand(inContainer(username, "echo '" + content + "' >> Dockerfile"), "/");
+            executeCommand(inContainer(username, "mkdir /dockerfiles"), "/");
+            executeCommand(inContainer(username, "touch /dockerfiles/Dockerfile"), "/");
+            
+            Path path = Paths.get("/dockerfiles");
+            Files.createDirectories(path);
+            File tmpDockerfile = new File("/dockerfiles/" + username);
+            FileWriter fw = new FileWriter(tmpDockerfile);
+            fw.write(content);
+            fw.close();
 
-            String message = executeCommand(inContainer(username, "docker build -t " + imageName + " ."), "/");
+            executeCommand("docker cp /dockerfiles/" + username + " " + username + ":/dockerfiles/Dockerfile", "/");
+            tmpDockerfile.delete();
+
+            String message = executeCommand(inContainer(username, "docker build -t " + imageName + " /dockerfiles/"), "/");
 
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
@@ -43,9 +55,9 @@ public class DockerfileOperations {
         }
     }
 
-    public void showImages(AppResponse appResponse) {
+    public void showImages(String username, AppResponse appResponse) {
         try {
-            String message = executeCommand("docker images", "/");
+            String message = executeCommand(inContainer(username, "docker images"), "/");
 
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
