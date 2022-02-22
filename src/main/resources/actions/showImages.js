@@ -3,12 +3,16 @@ try {
     RequestHelper.ajax(operationUri, {
       type: "POST",
       data: data,
-      onSuccess: function (result) {
+      onSuccess: async function (result) {
         console.log("onSuccess");
         console.log(operationUri);
+        await result;
+        OperationMetrics.stop();
       },
-      onProblems: function (result) {
+      onProblems: async function (result) {
         console.log("onProblems");
+        await result;
+        OperationMetrics.stop();
       },
     });
   }
@@ -27,6 +31,7 @@ try {
       )
     ) + DEPRECATED_EXEC_OP_URI.replace("$operationId", operationId);
 
+  OperationMetrics.play(operationId);
   sendRequest(operationUri, data);
 } catch (error) {
   console.error(error);

@@ -7,12 +7,14 @@ try {
     RequestHelper.ajax(operationUri, {
       type: "POST",
       data: data,
-      onSuccess: function (result) {
+      onSuccess: async function (result) {
         console.log("onSuccess");
         console.log(operationUri);
+        OperationMetrics.stop();
       },
-      onProblems: function (result) {
+      onProblems: async function (result) {
         console.log("onProblems");
+        OperationMetrics.stop();
       },
     });
   }
@@ -35,7 +37,7 @@ try {
       ModeManager.calculateModelIdFromExt(
         ModeManager.calculateExtFromFileUri(fileUri)
       )
-    ) + DEPRECATED_EXEC_OP_URI.replace("$operationId", operationId);
+    ) + DEPRECATED_EXEC_OP_URI.replace("$opId", operationId);
 
   showModal(
     "Introduce an image's name",
@@ -44,6 +46,7 @@ try {
     function () {
       imageName = $("#name").val();
       data.imageName = imageName;
+      OperationMetrics.play(operationId);
       sendRequest(operationUri, data);
       closeModal();
     },

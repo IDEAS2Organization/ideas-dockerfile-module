@@ -44,9 +44,29 @@ public class DockerfileOperations {
         }
     }
 
-    public void deleteImage(String imageName,  AppResponse appResponse) {
+    public void getImages(String username, AppResponse appResponse) {
         try {
-            String message = executeCommand("docker rmi " + imageName, "/");
+            String message = executeCommand(inContainer(username, "docker images"), "/");
+            String finalMsg = "{";
+            for(String line: message.split("\n")){
+                if(!line.contains("<")){
+                    String tmp = line + "\n";
+                    finalMsg += tmp.replaceAll("(\\S*)\\s*(\\S*)\\s*(\\S*)\\s*(\\S[\\s\\S]*)\\s\\s+(\\d*\\S*)\n", "'$1':'$5',"); // Se queda con el nombre y el tamaño
+                }
+            }
+            finalMsg += "}";
+            finalMsg = finalMsg.replace(",}", "}"); // Da fallo el JSON.parse si tiene la coma al final
+            finalMsg = finalMsg.replace("'", "\"");
+            appResponse.setData(finalMsg);
+            appResponse.setStatus(Status.OK);
+        } catch (IOException e) {
+            generateAppResponseError(appResponse, e);
+        }
+    }
+
+    public void deleteImage(String username, String imageName,  AppResponse appResponse) {
+        try {
+            String message = executeCommand(inContainer(username, "docker rmi " + imageName), "/");
 
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
@@ -159,4 +179,6 @@ public class DockerfileOperations {
                 .setHtmlMessage("<h1>An error has ocurred. </h1><br><b><pre>" + e.toString() + "'</pre></b>");
         appResponse.setStatus(Status.OK_PROBLEMS); // Si se pone Status.ERRORS no muestra el mensaje HTML
     }
+
+    
 }

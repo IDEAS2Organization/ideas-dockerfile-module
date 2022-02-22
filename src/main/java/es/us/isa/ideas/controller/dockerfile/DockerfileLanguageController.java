@@ -90,8 +90,10 @@ public class DockerfileLanguageController extends BaseLanguageController {
 		}
 		if (id.equals("build")) {
 			operations.buildImage(content, request.getParameter("imageName"), username, appResponse);
+		} else if (id.equals("get_images_to_delete")) {
+			operations.getImages(username, appResponse);
 		} else if (id.equals("delete_image")) {
-			operations.deleteImage(request.getParameter("imageName"), appResponse);
+			operations.deleteImage(username, request.getParameter("imageName"), appResponse);
 		} else if(id.equals("showImages")) {
 			operations.showImages(username, appResponse);
 		} else if(id.equals("showAllContainers")) {
