@@ -98,15 +98,15 @@ public class DockerfileLanguageController extends BaseLanguageController {
 				break;
 			
 			case "show_images":
-				operations.showImages(username, appResponse);
+				operations.showImages(username, request.getParameter("flags"), appResponse);
 				break;
 			
-			case "show_all_containers":
-				operations.showAllContainers(username, appResponse);
+			case "show_containers":
+				operations.showContainers(username, request.getParameter("flags"), appResponse);
 				break;
 			
 			case "run":
-				operations.run(username, request.getParameter("imageName"), appResponse);
+				operations.run(username, request.getParameter("name"), request.getParameter("isNew"), appResponse);
 				break;
 			
 			case "stop":

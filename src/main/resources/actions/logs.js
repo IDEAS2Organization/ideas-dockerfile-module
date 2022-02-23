@@ -22,13 +22,14 @@ async function del() {
             ModeManager.calculateModelIdFromExt(
               ModeManager.calculateExtFromFileUri(fileUri)
             )
-          ) + DEPRECATED_EXEC_OP_URI.replace("$opId", "show_all_containers");
+          ) + DEPRECATED_EXEC_OP_URI.replace("$opId", "show_containers");
   
         let tmp_data = {
           ...data,
         };
   
-        tmp_data.id = "show_all_containers";
+        tmp_data.id = "show_containers";
+        tmp_data.flags = "--all";
         var result = await $.ajax({
           url: uri,
           type: "POST",

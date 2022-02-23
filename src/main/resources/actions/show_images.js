@@ -1,4 +1,25 @@
 try {
+  function getSelectFlagsForm(data) {
+    var res =
+      "<fieldset>\
+    <legend>Please select one of the following</legend>$content</fieldset>";
+    var option =
+      '<input name="flagsNames" type="checkbox" id="$value" value="$value"/> <label for="$value">$name</label></br>';
+
+    var allFlags = ["--all", "--digests", "--no-trunc", "--quiet"];
+
+    var content = "";
+    for (var i in allFlags) { // Crea un input type checkbox por flag posible
+      content += option
+        .replaceAll("$value", allFlags[i])
+        .replaceAll("$name", allFlags[i]);
+    }
+    res = res.replace("$content", content);
+    return res;
+  }
+
+
+
   operationId = operationStructure.id;
   var data = {};
   data.fileUri = fileUri;
@@ -14,8 +35,31 @@ try {
       )
     ) + DEPRECATED_EXEC_OP_URI.replace("$operationId", operationId);
 
-  OperationMetrics.play(operationId);
-  sendRequest(operationUri, data);
+  //OperationMetrics.play(operationId);
+  //sendRequest(operationUri, data);
+
+  var form = getSelectFlagsForm();
+
+  showModal(
+    "Show images",
+    form,
+    "Show",
+    function () {
+      var selected = $("[name='flagsNames']");
+      var res = "";
+      for (var i = 0; i < selected.length; i++) {
+        if (selected[i].checked) {
+          res += selected[i].value + " ";
+        }
+      }
+      data.flags = res;
+      OperationMetrics.play(operationId);
+      sendRequest(operationUri, data);
+      closeModal();
+    },
+    closeModal,
+    ""
+  );
 } catch (error) {
   console.error(error);
 }

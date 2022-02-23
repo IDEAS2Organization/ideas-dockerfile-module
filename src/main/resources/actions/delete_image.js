@@ -29,6 +29,7 @@ async function del() {
       };
 
       tmp_data.id = "show_images";
+      tmp_data.flags = "";
       var result = await $.ajax({
         url: uri,
         type: "POST",

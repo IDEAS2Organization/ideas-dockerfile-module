@@ -56,9 +56,9 @@ public class DockerfileOperations {
         }
     }
 
-    public void showImages(String username, AppResponse appResponse) {
+    public void showImages(String username, String flags, AppResponse appResponse) {
         try {
-            String message = executeCommand(inContainer(username, "docker images"), "/");
+            String message = executeCommand(inContainer(username, "docker images " + flags), "/");
 
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
@@ -67,10 +67,9 @@ public class DockerfileOperations {
         }
     }
 
-    public void showAllContainers(String username, AppResponse appResponse) {
+    public void showContainers(String username, String flags, AppResponse appResponse) {
         try {
-            String message = executeCommand(inContainer(username, "docker ps -a"), "/");
-
+            String message = executeCommand(inContainer(username, "docker ps " + flags), "/");
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
         } catch (IOException e) {
@@ -78,9 +77,15 @@ public class DockerfileOperations {
         }
     }
 
-    public void run(String username, String imageName, AppResponse appResponse) {
+    public void run(String username, String name, String isNew, AppResponse appResponse) {
         try {
-            String message = executeCommand(inContainer(username, "docker run -d " + imageName), "/");
+            String message = null;
+            System.out.println(isNew);
+            if (isNew.equals("Y")) {
+                message = executeCommand(inContainer(username, "docker run -d " + name), "/");
+            } else {
+                message = executeCommand(inContainer(username, "docker start " + name), "/");
+            }
 
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
