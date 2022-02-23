@@ -1,58 +1,90 @@
-try {
-  function getNameForm() {
-    return "<input id='name'/>\
-      ";
-  }
-  function sendRequest(operationUri, data) {
-    RequestHelper.ajax(operationUri, {
-      type: "POST",
-      data: data,
-      onSuccess: async function (result) {
-        console.log("onSuccess");
-        console.log(operationUri);
-        await result;
-        OperationMetrics.stop();
-      },
-      onProblems: async function (result) {
-        console.log("onProblems");
-        await result;
-        OperationMetrics.stop();
-      },
-    });
-  }
-  function closeModal() {
-    $("#appGenericModal").attr("style", "display: none;");
-    $("#appGenericModal").attr("class", "modal");
-    $("#appGenericModal").attr("aria-hidden", "true");
-    $(".modal-backdrop").remove();
-  }
-  operationId = operationStructure.id;
-  var data = {};
-  data.id = operationId;
-  data.username = principalUser;
+async function del() {
+  try {
+    function parseContainersOutput(htmlMessage) {
+      var result = {};
+      var rows = htmlMessage.split("\n");
+      for (var row in rows) {
+        if (!rows[row].includes("<")) {
+          row_str = rows[row].split(" ");
+          if (row_str[0] !== "") result[row_str[0]] = rows[row];
+        }
+      }
+      return result;
+    }
+    async function getSelectForm(data) {
+      var res =
+        "<fieldset>\
+    <legend>Please select one of the following</legend>$content</fieldset>";
+      var option =
+        '<input name="containerNames" type="checkbox" id="$value" value="$value"/> <label for="$value">$name</label></br>';
+      var uri =
+        ModeManager.getBaseUri(
+          ModeManager.calculateModelIdFromExt(
+            ModeManager.calculateExtFromFileUri(fileUri)
+          )
+        ) + DEPRECATED_EXEC_OP_URI.replace("$opId", "show_all_containers");
 
-  // Devuelve 'http://localhost:8081/ideas-dockerfile-language/language/operation/$opId/execute'
-  operationUri =
-    ModeManager.getBaseUri(
-      ModeManager.calculateModelIdFromExt(
-        ModeManager.calculateExtFromFileUri(fileUri)
-      )
-    ) + DEPRECATED_EXEC_OP_URI.replace("$operationId", operationId);
+      let tmp_data = {
+        ...data,
+      };
 
-  showModal(
-    "Introduce a container's name or id",
-    getNameForm(),
-    "Delete",
-    function () {
-      nameOrId = $("#name").val();
-      data.nameOrId = nameOrId;
-      OperationMetrics.play(operationId);
-      sendRequest(operationUri, data);
-      closeModal();
-    },
-    closeModal,
-    ""
-  );
-} catch (error) {
-  console.error(error);
+      tmp_data.id = "show_all_containers";
+      var result = await $.ajax({
+        url: uri,
+        type: "POST",
+        data: tmp_data,
+      });
+
+      var images = parseContainersOutput(result.htmlMessage);
+
+      var content = "";
+      for (var image in images) {
+        content += option
+          .replaceAll("$value", image)
+          .replaceAll("$name", images[image]);
+      }
+      res = res.replace("$content", content);
+      return res;
+    }
+    operationId = operationStructure.id;
+    var data = {};
+    data.id = operationId;
+    data.username = principalUser;
+
+    // Devuelve 'http://localhost:8081/ideas-dockerfile-language/language/operation/$opId/execute'
+    operationUri =
+      ModeManager.getBaseUri(
+        ModeManager.calculateModelIdFromExt(
+          ModeManager.calculateExtFromFileUri(fileUri)
+        )
+      ) + DEPRECATED_EXEC_OP_URI.replace("$opId", operationId);
+
+    OperationMetrics.play(operationId);
+    var form = await getSelectForm(data);
+    OperationMetrics.stop();
+
+    showModal(
+      "Delete a container",
+      form,
+      "Delete",
+      function () {
+        var selected = $("[name='containerNames']");
+        var res = "";
+        for (var i = 0; i < selected.length; i++) {
+          if (selected[i].checked) {
+            res += selected[i].value + " ";
+          }
+        }
+        data.containerId = res;
+        OperationMetrics.play(operationId);
+        sendRequest(operationUri, data);
+        closeModal();
+      },
+      closeModal,
+      ""
+    );
+  } catch (error) {
+    console.error(error);
+  }
 }
+del();

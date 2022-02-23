@@ -88,22 +88,42 @@ public class DockerfileLanguageController extends BaseLanguageController {
 			operations.generateAppResponseError(appResponse, e);
 			return appResponse;
 		}
-		if (id.equals("build")) {
-			operations.buildImage(content, request.getParameter("imageName"), username, appResponse);
-		} else if (id.equals("get_images_to_delete")) {
-			operations.getImages(username, appResponse);
-		} else if (id.equals("delete_image")) {
-			operations.deleteImage(username, request.getParameter("imageName"), appResponse);
-		} else if(id.equals("showImages")) {
-			operations.showImages(username, appResponse);
-		} else if(id.equals("showAllContainers")) {
-			operations.showAllContainers(appResponse);
-		} else if(id.equals("run")) {
-			operations.run(request.getParameter("imageName"), appResponse);
-		} else if(id.equals("stop")) {
-			operations.stop(request.getParameter("nameOrId"), appResponse);
-		} else if(id.equals("delete_container")) {
-			operations.delete_container(request.getParameter("nameOrId"), appResponse);
+		switch(id){
+			case "build":
+				operations.buildImage(content, request.getParameter("imageName"), username, appResponse);
+				break;
+
+			case "delete_image":
+				operations.deleteImage(username, request.getParameter("imageName"), appResponse);
+				break;
+			
+			case "show_images":
+				operations.showImages(username, appResponse);
+				break;
+			
+			case "show_all_containers":
+				operations.showAllContainers(username, appResponse);
+				break;
+			
+			case "run":
+				operations.run(username, request.getParameter("imageName"), appResponse);
+				break;
+			
+			case "stop":
+				operations.stop(username, request.getParameter("containerId"), appResponse);
+				break;
+			
+			case "delete_container":
+				operations.delete_container(username, request.getParameter("containerId"), appResponse);
+				break;
+
+			case "logs":
+				operations.logs_from_container(username, request.getParameter("containerId"), appResponse);
+				break;
+			
+			default:
+				String htmlMessage = operations.generateHTMLMessage("", "'" + id + "' no es un id válido.", 0);
+				appResponse.setHtmlMessage(htmlMessage);
 		}
 		return appResponse;
 	}

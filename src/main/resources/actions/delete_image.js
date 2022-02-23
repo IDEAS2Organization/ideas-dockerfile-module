@@ -1,5 +1,16 @@
 async function del() {
   try {
+    function parseImagesOutput(htmlMessage) {
+      var result = {};
+      var rows = htmlMessage.split("\n");
+      for (var row in rows) {
+        if (!rows[row].includes("<")) {
+          row = rows[row].split(" ");
+          if (row[0] !== "") result[row[0]] = row[row.length - 1];
+        }
+      }
+      return result;
+    }
     async function getSelectForm(data) {
       var res =
         "<fieldset>\
@@ -11,22 +22,21 @@ async function del() {
           ModeManager.calculateModelIdFromExt(
             ModeManager.calculateExtFromFileUri(fileUri)
           )
-        ) + DEPRECATED_EXEC_OP_URI.replace("$opId", "get_images_to_delete");
+        ) + DEPRECATED_EXEC_OP_URI.replace("$opId", "show_images");
 
       let tmp_data = {
         ...data,
       };
 
-      tmp_data.id = "get_images_to_delete";
+      tmp_data.id = "show_images";
       var result = await $.ajax({
         url: uri,
         type: "POST",
         data: tmp_data,
       });
 
-      console.log("onSuccess");
-      console.log(uri);
-      var images = JSON.parse(result.data);
+      var images = parseImagesOutput(result.htmlMessage);
+
       var content = "";
       for (var image in images) {
         content += option
@@ -35,26 +45,6 @@ async function del() {
       }
       res = res.replace("$content", content);
       return res;
-    }
-    function sendRequest(operationUri, data) {
-      RequestHelper.ajax(operationUri, {
-        type: "POST",
-        data: data,
-        onSuccess: async function (result) {
-          console.log("onSuccess");
-          console.log(operationUri);
-          OperationMetrics.stop();
-        },
-        onProblems: async function (result) {
-          console.log("onProblems");
-        },
-      });
-    }
-    function closeModal() {
-      $("#appGenericModal").attr("style", "display: none;");
-      $("#appGenericModal").attr("class", "modal");
-      $("#appGenericModal").attr("aria-hidden", "true");
-      $(".modal-backdrop").remove();
     }
     operationId = operationStructure.id;
     var data = {};
@@ -85,9 +75,9 @@ async function del() {
             res += selected[i].value + " ";
           }
         }
-        data.imageName = res
+        data.imageName = res;
         OperationMetrics.play(operationId);
-        sendRequest(operationUri, data)
+        sendRequest(operationUri, data);
         closeModal();
       },
       closeModal,

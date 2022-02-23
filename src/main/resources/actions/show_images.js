@@ -1,21 +1,4 @@
 try {
-  function sendRequest(operationUri, data) {
-    RequestHelper.ajax(operationUri, {
-      type: "POST",
-      data: data,
-      onSuccess: async function (result) {
-        console.log("onSuccess");
-        console.log(operationUri);
-        await result;
-        OperationMetrics.stop();
-      },
-      onProblems: async function (result) {
-        console.log("onProblems");
-        await result;
-        OperationMetrics.stop();
-      },
-    });
-  }
   operationId = operationStructure.id;
   var data = {};
   data.fileUri = fileUri;

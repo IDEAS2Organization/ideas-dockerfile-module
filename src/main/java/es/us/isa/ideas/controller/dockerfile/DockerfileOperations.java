@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 public class DockerfileOperations {
 
-    private String inContainer(String username, String command){
+    private String inContainer(String username, String command) {
         return "docker exec " + username + " " + command;
     }
 
@@ -24,7 +24,7 @@ public class DockerfileOperations {
         try {
             executeCommand(inContainer(username, "mkdir /dockerfiles"), "/");
             executeCommand(inContainer(username, "touch /dockerfiles/Dockerfile"), "/");
-            
+
             Path path = Paths.get("/dockerfiles");
             Files.createDirectories(path);
             File tmpDockerfile = new File("/dockerfiles/" + username);
@@ -35,7 +35,8 @@ public class DockerfileOperations {
             executeCommand("docker cp /dockerfiles/" + username + " " + username + ":/dockerfiles/Dockerfile", "/");
             tmpDockerfile.delete();
 
-            String message = executeCommand(inContainer(username, "docker build -t " + imageName + " /dockerfiles/"), "/");
+            String message = executeCommand(inContainer(username, "docker build -t " + imageName + " /dockerfiles/"),
+                    "/");
 
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
@@ -44,27 +45,7 @@ public class DockerfileOperations {
         }
     }
 
-    public void getImages(String username, AppResponse appResponse) {
-        try {
-            String message = executeCommand(inContainer(username, "docker images"), "/");
-            String finalMsg = "{";
-            for(String line: message.split("\n")){
-                if(!line.contains("<")){
-                    String tmp = line + "\n";
-                    finalMsg += tmp.replaceAll("(\\S*)\\s*(\\S*)\\s*(\\S*)\\s*(\\S[\\s\\S]*)\\s\\s+(\\d*\\S*)\n", "'$1':'$5',"); // Se queda con el nombre y el tamaño
-                }
-            }
-            finalMsg += "}";
-            finalMsg = finalMsg.replace(",}", "}"); // Da fallo el JSON.parse si tiene la coma al final
-            finalMsg = finalMsg.replace("'", "\"");
-            appResponse.setData(finalMsg);
-            appResponse.setStatus(Status.OK);
-        } catch (IOException e) {
-            generateAppResponseError(appResponse, e);
-        }
-    }
-
-    public void deleteImage(String username, String imageName,  AppResponse appResponse) {
+    public void deleteImage(String username, String imageName, AppResponse appResponse) {
         try {
             String message = executeCommand(inContainer(username, "docker rmi " + imageName), "/");
 
@@ -86,9 +67,9 @@ public class DockerfileOperations {
         }
     }
 
-    public void showAllContainers(AppResponse appResponse) {
+    public void showAllContainers(String username, AppResponse appResponse) {
         try {
-            String message = executeCommand("docker ps -a", "/");
+            String message = executeCommand(inContainer(username, "docker ps -a"), "/");
 
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
@@ -97,9 +78,9 @@ public class DockerfileOperations {
         }
     }
 
-    public void run(String imageName,  AppResponse appResponse) {
+    public void run(String username, String imageName, AppResponse appResponse) {
         try {
-            String message = executeCommand("docker run -d " + imageName, "/");
+            String message = executeCommand(inContainer(username, "docker run -d " + imageName), "/");
 
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
@@ -108,9 +89,9 @@ public class DockerfileOperations {
         }
     }
 
-    public void stop(String nameOrId,  AppResponse appResponse) {
+    public void stop(String username, String containerId, AppResponse appResponse) {
         try {
-            String message = executeCommand("docker stop " + nameOrId, "/");
+            String message = executeCommand(inContainer(username, "docker stop " + containerId), "/");
 
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
@@ -119,9 +100,20 @@ public class DockerfileOperations {
         }
     }
 
-    public void delete_container(String nameOrId,  AppResponse appResponse) {
+    public void delete_container(String username, String containerId, AppResponse appResponse) {
         try {
-            String message = executeCommand("docker rm " + nameOrId, "/");
+            String message = executeCommand(inContainer(username, "docker rm " + containerId), "/");
+
+            appResponse.setHtmlMessage(message);
+            appResponse.setStatus(Status.OK);
+        } catch (IOException e) {
+            generateAppResponseError(appResponse, e);
+        }
+    }
+
+    public void logs_from_container(String username, String containerId, AppResponse appResponse) {
+        try {
+            String message = executeCommand(inContainer(username, "docker logs " + containerId), "/");
 
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
@@ -180,5 +172,4 @@ public class DockerfileOperations {
         appResponse.setStatus(Status.OK_PROBLEMS); // Si se pone Status.ERRORS no muestra el mensaje HTML
     }
 
-    
 }
