@@ -38,7 +38,7 @@ async function del() {
       var images = parseImagesOutput(result.htmlMessage);
 
       var content = "";
-      for (var image in images) {
+      for (var image in images) { // Crea un input type checkbox por imagen almacenada
         content += option
           .replaceAll("$value", image)
           .replaceAll("$name", image + " " + images[image]);
@@ -46,6 +46,8 @@ async function del() {
       res = res.replace("$content", content);
       return res;
     }
+
+    // Primer paso: obtener nombres de imágenes y crear form con checkboxes
     operationId = operationStructure.id;
     var data = {};
     data.id = operationId;
@@ -59,15 +61,16 @@ async function del() {
         )
       ) + DEPRECATED_EXEC_OP_URI.replace("$opId", operationId);
 
-    OperationMetrics.play(operationId);
+    OperationMetrics.play(operationId); // Muestra el contador de tiempo 
     var form = await getSelectForm(data);
     OperationMetrics.stop();
 
+    // Segundo paso: crea un modal que contiene el form anterior
     showModal(
       "Delete an image",
-      form,
+      form, // inserta el form anterior
       "Delete",
-      function () {
+      function () { // res contiene los nombres de las imágenes seleccionadas separadas por espacio, para borrar en un solo comando después
         var selected = $("[name='imageNames']");
         var res = "";
         for (var i = 0; i < selected.length; i++) {
@@ -75,7 +78,7 @@ async function del() {
             res += selected[i].value + " ";
           }
         }
-        data.imageName = res;
+        data.imageName = res; 
         OperationMetrics.play(operationId);
         sendRequest(operationUri, data);
         closeModal();

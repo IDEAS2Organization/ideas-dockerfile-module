@@ -4,10 +4,10 @@
 function getCode(operationStructure, fileUri) {
   if (document.getElementById("dockerfile-module-data"))
     document.getElementById("dockerfile-module-data").remove();
-  var s = document.createElement("script");
+  var s = document.createElement("script"); // Crea un elemento <script> en el documento
   s.type = "application/javascript";
   s.id = "dockerfile-module-data";
-  // Se definen los atributos para que puedan ser usados después
+  // Se definen las variables de JS en el documento para que puedan ser usados después por el segundo script que se crea
   s.text =
     "var operationStructure = " +
     JSON.stringify(operationStructure) +
