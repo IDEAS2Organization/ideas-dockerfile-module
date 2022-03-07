@@ -6,7 +6,7 @@ async function del() {
         for (var row in rows) {
           if (!rows[row].includes("<")) {
             row_str = rows[row].split(" ");
-            if (row_str[0] !== "") result[row_str[0]] = rows[row];
+            if (row_str[0] !== "") result[row_str[row_str.length - 1]] = rows[row];
           }
         }
         return result;
@@ -36,13 +36,13 @@ async function del() {
           data: tmp_data,
         });
   
-        var images = parseContainersOutput(result.htmlMessage);
+        var containers = parseContainersOutput(result.htmlMessage);
   
         var content = "";
-        for (var image in images) {
+        for (var container in containers) {
           content += option
-            .replaceAll("$value", image)
-            .replaceAll("$name", images[image]);
+            .replaceAll("$value", container)
+            .replaceAll("$name", container);
         }
         res = res.replace("$content", content);
         return res;

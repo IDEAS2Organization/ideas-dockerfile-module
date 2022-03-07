@@ -4,21 +4,26 @@ try {
       "<fieldset>\
     <legend>Please select one of the following</legend>$content</fieldset>";
     var option =
-      '<input name="flagsNames" type="checkbox" id="$value" value="$value"/> <label for="$value">$name</label></br>';
+      '<input name="flagsNames" type="checkbox" id="$value" value="$value"/> <label data-toggle="tooltip" title="$help" for="$value">$name</label></br>';
 
-    var allFlags = ["--all", "--digests", "--no-trunc", "--quiet"];
+    const allFlags = {
+      "--all": "Muestra todos los contenedores",
+      "--digests": "Muestra el hash 'sha1' de la imagen",
+      "--no-trunc": "No corta la salida",
+      "--quiet": "Muestra únicamente los id",
+    };
 
     var content = "";
-    for (var i in allFlags) { // Crea un input type checkbox por flag posible
+    for (var i in allFlags) {
+      // Crea un input type checkbox por flag posible
       content += option
-        .replaceAll("$value", allFlags[i])
-        .replaceAll("$name", allFlags[i]);
+        .replaceAll("$value", i)
+        .replaceAll("$name", i)
+        .replaceAll("$help", allFlags[i]);
     }
     res = res.replace("$content", content);
     return res;
   }
-
-
 
   operationId = operationStructure.id;
   var data = {};

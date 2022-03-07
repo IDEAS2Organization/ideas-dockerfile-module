@@ -14,6 +14,8 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
+
 public class DockerfileOperations {
 
     private String inContainer(String username, String command) {
@@ -22,6 +24,12 @@ public class DockerfileOperations {
 
     public void buildImage(String content, String imageName, String username, AppResponse appResponse) {
         try {
+
+            if (imageName.contains("&") || imageName.contains(" ")) {
+                throw new InvalidFileNameException(imageName,
+                        "Se ha detectado una posible injección de código en el nombre. Usa otro nombre para construir la imagen.");
+            }
+
             executeCommand(inContainer(username, "mkdir /dockerfiles"), "/");
             executeCommand(inContainer(username, "touch /dockerfiles/Dockerfile"), "/");
 
@@ -41,6 +49,8 @@ public class DockerfileOperations {
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
         } catch (IOException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (InvalidFileNameException e) {
             generateAppResponseError(appResponse, e);
         }
     }
@@ -80,7 +90,6 @@ public class DockerfileOperations {
     public void run(String username, String name, String isNew, AppResponse appResponse) {
         try {
             String message = null;
-            System.out.println(isNew);
             if (isNew.equals("Y")) {
                 message = executeCommand(inContainer(username, "docker run -d " + name), "/");
             } else {
@@ -171,7 +180,7 @@ public class DockerfileOperations {
 
     }
 
-    public void generateAppResponseError(AppResponse appResponse, IOException e) {
+    public void generateAppResponseError(AppResponse appResponse, Exception e) {
         appResponse
                 .setHtmlMessage("<h1>An error has ocurred. </h1><br><b><pre>" + e.toString() + "'</pre></b>");
         appResponse.setStatus(Status.OK_PROBLEMS); // Si se pone Status.ERRORS no muestra el mensaje HTML
