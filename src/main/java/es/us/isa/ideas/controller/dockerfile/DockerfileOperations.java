@@ -29,6 +29,8 @@ public class DockerfileOperations {
                 throw new InvalidFileNameException(imageName,
                         "Se ha detectado una posible injección de código en el nombre. Usa otro nombre para construir la imagen.");
             }
+            imageName = imageName.replace("'", "\\'").replace("\"", "\\\""); // Reemplaza los ' por \' y los " por \"
+                                                                             // para evitar inyecciones de código
 
             executeCommand(inContainer(username, "mkdir /dockerfiles"), "/");
             executeCommand(inContainer(username, "touch /dockerfiles/Dockerfile"), "/");

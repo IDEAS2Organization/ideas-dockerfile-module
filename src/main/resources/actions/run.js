@@ -5,8 +5,10 @@ async function del() {
       var rows = htmlMessage.split("\n");
       for (var row in rows) {
         if (!rows[row].includes("<")) {
+          rows[row] = rows[row].replace(/\s+/gi, " "); // Sustituye un grupo de espacios por un único espacio 'imagen      300mb   44' -> 'imagen 300mb 44'
           row = rows[row].split(" ");
-          if (row[0] !== "") result[row[0]] = row[row.length - 1];
+          if (row[0] !== "")
+            result[row[0] + ":" + row[1]] = row[row.length - 1];
         }
       }
       return result;
@@ -18,14 +20,14 @@ async function del() {
       for (var row in rows) {
         if (!rows[row].includes("<")) {
           row_str = rows[row].split(" ");
-          if (row_str[0] !== "") result[row_str[row_str.length - 1]] = rows[row];
+          if (row_str[0] !== "")
+            result[row_str[row_str.length - 1]] = rows[row];
         }
       }
       return result;
     }
 
     async function getSelectForm(data) {
-
       // Parte del form para las imágenes (crear un nuevo contenedor)
       var res =
         "<fieldset>\
@@ -63,7 +65,7 @@ async function del() {
 
       // Parte del form para los contenedores parados
       var res2 =
-      "<fieldset>\
+        "<fieldset>\
       <legend>Restart a stopped container</legend>$content2</fieldset>";
       var option2 =
         '<input name="radio-button" title="containerNames" type="radio" id="$value" value="$value"/> <label for="$value">$name</label></br>';
@@ -125,7 +127,7 @@ async function del() {
         var selected2 = $("[title='containerNames']");
         var isNew = "F";
         var res = "";
-        
+
         for (var i = 0; i < selected1.length; i++) {
           if (selected1[i].checked) {
             isNew = "Y";
@@ -140,7 +142,7 @@ async function del() {
             }
           }
         }
-        
+
         data.name = res;
         data.isNew = isNew;
         OperationMetrics.play(operationId);
