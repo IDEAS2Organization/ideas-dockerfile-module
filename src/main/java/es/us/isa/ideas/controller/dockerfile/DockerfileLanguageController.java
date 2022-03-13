@@ -114,11 +114,11 @@ public class DockerfileLanguageController extends BaseLanguageController {
 				break;
 			
 			case "delete_container":
-				operations.delete_container(username, request.getParameter("containerId"), appResponse);
+				operations.deleteContainer(username, request.getParameter("containerId"), appResponse);
 				break;
 
 			case "logs":
-				operations.logs_from_container(username, request.getParameter("containerId"), appResponse);
+				operations.logsFromContainer(username, request.getParameter("containerId"), appResponse);
 				break;
 			
 			default:

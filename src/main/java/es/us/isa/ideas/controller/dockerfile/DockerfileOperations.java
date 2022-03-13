@@ -18,7 +18,7 @@ import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 
 public class DockerfileOperations {
 
-    private String inContainer(String username, String command) {
+    public String inContainer(String username, String command) {
         return "docker exec " + username + " " + command;
     }
 
@@ -116,7 +116,7 @@ public class DockerfileOperations {
         }
     }
 
-    public void delete_container(String username, String containerId, AppResponse appResponse) {
+    public void deleteContainer(String username, String containerId, AppResponse appResponse) {
         try {
             String message = executeCommand(inContainer(username, "docker rm " + containerId), "/");
 
@@ -127,7 +127,7 @@ public class DockerfileOperations {
         }
     }
 
-    public void logs_from_container(String username, String containerId, AppResponse appResponse) {
+    public void logsFromContainer(String username, String containerId, AppResponse appResponse) {
         try {
             String message = executeCommand(inContainer(username, "docker logs " + containerId), "/");
 
