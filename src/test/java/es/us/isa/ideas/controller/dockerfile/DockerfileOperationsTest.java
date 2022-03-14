@@ -4,11 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
+import org.assertj.core.util.Files;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
@@ -129,6 +132,7 @@ public class DockerfileOperationsTest {
      * Primero crea un contenedor a partir de una imagen existente. Después,
      * tras 5 segundos, comprueba que existe. Luego para el contenedor y comprueba
      * que está parado. Tras esto lo vuelve a arrancar y parar. Por último lo borra
+     * 
      * @throws IOException
      * @throws InterruptedException
      */
@@ -147,13 +151,25 @@ public class DockerfileOperationsTest {
         assertEquals(appResponse.getStatus(), Status.OK);
         assertFalse(appResponse.getHtmlMessage().contains("<h3>Errors found:</h3>"));
 
-        String containerId = appResponse.getHtmlMessage().replaceAll("[\\s\\S]*<pre>([\\s\\S]*?)\\n</pre>[\\s\\S]*", "$1");
+        String containerId = appResponse.getHtmlMessage().replaceAll("[\\s\\S]*<pre>([\\s\\S]*?)\\n</pre>[\\s\\S]*",
+                "$1");
 
         TimeUnit.SECONDS.sleep(5);
         System.out.println("==================================");
         System.out.println("TEST CHECK CONTAINER IS RUNNING");
 
         assertTrue(runningOrExistingContainer(username, containerId.substring(0, 5), true));
+
+        appResponse = new AppResponse();
+        System.out.println("==================================");
+        System.out.println("TEST LOGS CONTAINER");
+
+        operations.logsFromContainer(username, containerId, appResponse);
+        String logs = appResponse.getHtmlMessage();
+        File logs_output = new File("src/main/resources/testfiles/logs.txt");
+        assertTrue(logs.replaceAll("</b>.*? ms", "</b>1 ms").replaceAll("172\\.18\\.0\\..*?\\.", "172.18.0.*.")
+                .replaceAll("\n\\[.*?\\]", "\n[fecha]").replaceAll("tid .*?]", "tid \\*]")
+                .equals(Files.contentOf(logs_output, Charset.defaultCharset())));
 
         appResponse = new AppResponse();
         System.out.println("==================================");
@@ -183,7 +199,7 @@ public class DockerfileOperationsTest {
         System.out.println("TEST CHECK CONTAINER IS RUNNING");
 
         assertTrue(runningOrExistingContainer(username, containerId.substring(0, 5), true));
-        
+
         appResponse = new AppResponse();
         System.out.println("==================================");
         System.out.println("TEST STOP AND REMOVE CONTAINER");
@@ -196,7 +212,7 @@ public class DockerfileOperationsTest {
         operations.deleteContainer(username, containerId, appResponse);
         assertEquals(appResponse.getStatus(), Status.OK);
         assertFalse(appResponse.getHtmlMessage().contains("<h3>Errors found:</h3>"));
-        
+
         System.out.println("==================================");
         System.out.println("TEST CONTAINER DOES NOT EXISTS");
 
