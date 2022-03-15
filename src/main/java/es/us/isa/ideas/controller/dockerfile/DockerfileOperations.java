@@ -18,20 +18,21 @@ import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 
 public class DockerfileOperations {
 
+    public String avoidCodeInjection(String command) {
+        if (command.contains("&")) {
+            throw new InvalidFileNameException(command,
+                    "Se ha detectado una posible injección de código en el nombre. Usa otro comando");
+        }
+        // Reemplaza los ' por \' y los " por \" para evitar inyecciones de código
+        return command.replace("'", "\\'").replace("\"", "\\\""); 
+    }
+
     public String inContainer(String username, String command) {
-        return "docker exec " + username + " " + command;
+        return "docker exec " + username + " " + avoidCodeInjection(command);
     }
 
     public void buildImage(String content, String imageName, String username, AppResponse appResponse) {
         try {
-
-            if (imageName.contains("&") || imageName.contains(" ")) {
-                throw new InvalidFileNameException(imageName,
-                        "Se ha detectado una posible injección de código en el nombre. Usa otro nombre para construir la imagen.");
-            }
-            imageName = imageName.replace("'", "\\'").replace("\"", "\\\""); // Reemplaza los ' por \' y los " por \"
-                                                                             // para evitar inyecciones de código
-
             executeCommand(inContainer(username, "mkdir /dockerfiles"), "/");
             executeCommand(inContainer(username, "touch /dockerfiles/Dockerfile"), "/");
 
@@ -54,6 +55,8 @@ public class DockerfileOperations {
             generateAppResponseError(appResponse, e);
         } catch (InvalidFileNameException e) {
             generateAppResponseError(appResponse, e);
+        } catch (Exception e){
+            generateAppResponseError(appResponse, e);
         }
     }
 
@@ -64,6 +67,10 @@ public class DockerfileOperations {
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
         } catch (IOException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (InvalidFileNameException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (Exception e){
             generateAppResponseError(appResponse, e);
         }
     }
@@ -76,6 +83,10 @@ public class DockerfileOperations {
             appResponse.setStatus(Status.OK);
         } catch (IOException e) {
             generateAppResponseError(appResponse, e);
+        } catch (InvalidFileNameException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (Exception e){
+            generateAppResponseError(appResponse, e);
         }
     }
 
@@ -85,6 +96,10 @@ public class DockerfileOperations {
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
         } catch (IOException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (InvalidFileNameException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (Exception e){
             generateAppResponseError(appResponse, e);
         }
     }
@@ -102,6 +117,10 @@ public class DockerfileOperations {
             appResponse.setStatus(Status.OK);
         } catch (IOException e) {
             generateAppResponseError(appResponse, e);
+        } catch (InvalidFileNameException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (Exception e){
+            generateAppResponseError(appResponse, e);
         }
     }
 
@@ -112,6 +131,10 @@ public class DockerfileOperations {
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
         } catch (IOException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (InvalidFileNameException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (Exception e){
             generateAppResponseError(appResponse, e);
         }
     }
@@ -124,6 +147,10 @@ public class DockerfileOperations {
             appResponse.setStatus(Status.OK);
         } catch (IOException e) {
             generateAppResponseError(appResponse, e);
+        } catch (InvalidFileNameException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (Exception e){
+            generateAppResponseError(appResponse, e);
         }
     }
 
@@ -134,6 +161,8 @@ public class DockerfileOperations {
             appResponse.setHtmlMessage(message);
             appResponse.setStatus(Status.OK);
         } catch (IOException e) {
+            generateAppResponseError(appResponse, e);
+        } catch (InvalidFileNameException e) {
             generateAppResponseError(appResponse, e);
         }
     }
