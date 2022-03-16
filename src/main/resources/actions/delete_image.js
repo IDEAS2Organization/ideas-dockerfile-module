@@ -5,8 +5,10 @@ async function del() {
       var rows = htmlMessage.split("\n");
       for (var row in rows) {
         if (!rows[row].includes("<")) {
+          rows[row] = rows[row].replace(/\s+/gi, " "); // Sustituye un grupo de espacios por un único espacio 'imagen      300mb   44' -> 'imagen 300mb 44'
           row = rows[row].split(" ");
-          if (row[0] !== "") result[row[0]] = row[row.length - 1];
+          if (row[0] !== "")
+            result[row[0] + ":" + row[1]] = row[row.length - 1];
         }
       }
       return result;
