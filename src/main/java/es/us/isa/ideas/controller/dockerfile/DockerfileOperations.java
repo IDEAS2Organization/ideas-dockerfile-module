@@ -18,6 +18,8 @@ import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 
 public class DockerfileOperations {
 
+    private Boolean one_user_mode = Boolean.parseBoolean(System.getenv("ONE_USER_MODE"));
+
     public String avoidCodeInjection(String command) {
         if (command.contains("&")) {
             throw new InvalidFileNameException(command,
@@ -28,23 +30,34 @@ public class DockerfileOperations {
     }
 
     public String inContainer(String username, String command) {
-        return "docker exec " + username + " " + avoidCodeInjection(command);
+        if (one_user_mode) {
+            return avoidCodeInjection(command);
+        } else {
+            return "docker exec " + username + " " + avoidCodeInjection(command);
+        }
     }
 
     public void buildImage(String content, String imageName, String username, AppResponse appResponse) {
         try {
             executeCommand(inContainer(username, "mkdir /dockerfiles"), "/");
-            executeCommand(inContainer(username, "touch /dockerfiles/Dockerfile"), "/");
 
-            Path path = Paths.get("/dockerfiles");
-            Files.createDirectories(path);
-            File tmpDockerfile = new File("/dockerfiles/" + username);
-            FileWriter fw = new FileWriter(tmpDockerfile);
-            fw.write(content);
-            fw.close();
-
-            executeCommand("docker cp /dockerfiles/" + username + " " + username + ":/dockerfiles/Dockerfile", "/");
-            tmpDockerfile.delete();
+            if (one_user_mode) {
+                File dockerFile = new File("/dockerfiles/Dockerfile");
+                FileWriter fw = new FileWriter(dockerFile);
+                fw.write(content);
+                fw.close();
+            } else {
+                executeCommand(inContainer(username, "touch /dockerfiles/Dockerfile"), "/");
+                Path path = Paths.get("/dockerfiles");
+                Files.createDirectories(path);
+                File tmpDockerfile = new File("/dockerfiles/" + username);
+                FileWriter fw = new FileWriter(tmpDockerfile);
+                fw.write(content);
+                fw.close();
+    
+                executeCommand("docker cp /dockerfiles/" + username + " " + username + ":/dockerfiles/Dockerfile", "/");
+                tmpDockerfile.delete();
+            }
 
             String message = executeCommand(inContainer(username, "docker build -t " + imageName + " /dockerfiles/"),
                     "/");
@@ -194,6 +207,34 @@ public class DockerfileOperations {
         String outputString = org.assertj.core.util.Files.contentOf(output.toFile(), Charset.defaultCharset());
         String errorString = org.assertj.core.util.Files.contentOf(errors.toFile(), Charset.defaultCharset());
         return generateHTMLMessage(outputString, errorString, System.currentTimeMillis() - start);
+    }
+
+    public String[] executeCommandForTesting(String command, String inputPath) throws IOException {
+        System.out.println(System.currentTimeMillis() + " - Executing command: '" + command + "' at path: '"
+                + inputPath + "'");
+
+        String[] commands = command.split(" ");
+        ProcessBuilder pb = new ProcessBuilder(commands);
+        pb.directory(new File(inputPath));
+
+        Path output = Files.createTempFile("", "-outuput.log");
+        Path errors = Files.createTempFile("", "-error.log");
+        pb.redirectError(Redirect.appendTo(errors.toFile()));
+        pb.redirectOutput(Redirect.appendTo(output.toFile()));
+
+        Process p = pb.start();
+        while (p.isAlive()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger("Docker").log(Level.SEVERE, null, ex);
+            }
+        }
+        System.out.println(System.currentTimeMillis() + " - Command execution finished with code: " + p.exitValue());
+        String outputString = org.assertj.core.util.Files.contentOf(output.toFile(), Charset.defaultCharset());
+        String errorString = org.assertj.core.util.Files.contentOf(errors.toFile(), Charset.defaultCharset());
+        String[] array = {outputString, errorString};
+        return array;
     }
 
     public String generateHTMLMessage(String output, String errors, long duration) {

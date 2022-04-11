@@ -19,6 +19,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
 import es.us.isa.ideas.module.common.AppResponse;
 import es.us.isa.ideas.module.common.AppResponse.Status;
@@ -31,6 +32,7 @@ public class DockerfileOperationsTest {
 
     String username = "Username1";
     Map<String, String> documents = Map.of("Dockerfile", "FROM node:16.14.0-alpine3.15", "Dockerfile.local", "");
+    private Boolean one_user_mode = Boolean.parseBoolean(System.getenv("ONE_USER_MODE"));
 
     /**
      * Inicializa los contenedores de pruebas
@@ -57,6 +59,12 @@ public class DockerfileOperationsTest {
 
         operations.executeCommand("docker kill " + username, "/");
         operations.executeCommand("docker rm " + username, "/");
+
+        if (!one_user_mode) {
+            operations.executeCommand("docker kill test1 test2", "/");
+            operations.executeCommand("docker rm test1 test2", "/");
+        }
+
         System.out.println("==================================");
         System.out.println("TESTS FINISHED");
     }
@@ -167,9 +175,9 @@ public class DockerfileOperationsTest {
         operations.logsFromContainer(username, containerId, appResponse);
         String logs = appResponse.getHtmlMessage();
         File logs_output = new File("src/main/resources/testfiles/logs.txt");
-        assertTrue(logs.replaceAll("</b>.*? ms", "</b>1 ms").replaceAll("172\\.18\\.0\\..*?\\.", "172.18.0.*.")
-                .replaceAll("\n\\[.*?\\]", "\n[fecha]").replaceAll("tid .*?]", "tid \\*]")
-                .equals(Files.contentOf(logs_output, Charset.defaultCharset())));
+        assertEquals(logs.replaceAll("</b>.*? ms", "</b>1 ms").replaceAll("172\\.[0-9]{2}\\.0\\..*?\\.", "172.18.0.*.")
+                .replaceAll("\n\\[.*?\\]", "\n[fecha]").replaceAll("tid .*?]", "tid \\*]").replaceAll("Apache/2\\.4\\.[0-9]{2}", "Apache/2.4.52"),
+                Files.contentOf(logs_output, Charset.defaultCharset()));
 
         appResponse = new AppResponse();
         System.out.println("==================================");
@@ -220,5 +228,29 @@ public class DockerfileOperationsTest {
         assertFalse(runningOrExistingContainer(username, containerId.substring(0, 5), false));
 
     }
+
+
+    private String[] usernames = {"test1", "test2"};
+
+    @Test
+    @Order(4)
+    @DisabledIfEnvironmentVariable(named = "ONE_USER_MODE", matches= "true")
+    public void testMultipleUsers() throws IOException {
+        System.out.println("==================================");
+        System.out.println("TEST MULTIPLE USERS");
+
+        AppResponse appResponse = new AppResponse();
+
+        // Cada usuario debería ver solo 1 imagen
+        for (String u:usernames) {
+            operations.buildImage(documents.get("Dockerfile"), "image_test1", u, appResponse);
+            assertEquals(appResponse.getStatus(), Status.OK);
+
+            String[] output = operations.executeCommandForTesting(operations.inContainer(u, "docker images -q"), "/");
+            assertEquals(1, output[0].split("\n").length);
+        }  
+    }
+
+
 
 }

@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/ideas-dockerfile-language/language")
 public class DockerfileLanguageController extends BaseLanguageController {
 
+	private Boolean one_user_mode = Boolean.parseBoolean(System.getenv("ONE_USER_MODE"));
 
 	DockerfileOperations operations = new DockerfileOperations();
 
@@ -82,8 +83,12 @@ public class DockerfileLanguageController extends BaseLanguageController {
 			// Si el contenedor está iniciado, el primer comando falla y el segundo no hace nada
 			// Si el contenedor está parado, el primer comando falla y el segundo inicia el contenedor
 			// Si el contenedor no existe, el primer comando lo crea y el segundo no hace nada
-			operations.executeCommand("docker run -d --privileged --name " + username + " docker:dind dockerd", "/");
-			operations.executeCommand("docker start " + username, "/");
+			
+			if (!one_user_mode) {
+				operations.executeCommand("docker run -d --privileged --name " + username + " docker:dind dockerd", "/");
+				operations.executeCommand("docker start " + username, "/");
+			}
+			
 		}catch(IOException e){
 			operations.generateAppResponseError(appResponse, e);
 			return appResponse;
