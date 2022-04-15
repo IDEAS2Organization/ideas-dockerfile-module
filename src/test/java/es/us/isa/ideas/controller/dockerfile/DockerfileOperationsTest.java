@@ -45,6 +45,13 @@ public class DockerfileOperationsTest {
         System.out.println("START SETUP");
         operations.executeCommand("docker run -d --privileged --name " + username + " docker:dind dockerd", "/");
         operations.executeCommand("docker start " + username, "/");
+
+        if (!one_user_mode) {
+            operations.executeCommand("docker run -d --privileged --name test1 docker:dind dockerd", "/");
+            operations.executeCommand("docker run -d --privileged --name test2 docker:dind dockerd", "/");
+            operations.executeCommand("docker start test1", "/");
+            operations.executeCommand("docker start test2", "/");
+        }
     }
 
     /**
@@ -247,7 +254,7 @@ public class DockerfileOperationsTest {
             assertEquals(appResponse.getStatus(), Status.OK);
 
             String[] output = operations.executeCommandForTesting(operations.inContainer(u, "docker images -q"), "/");
-            assertEquals(1, output[0].split("\n").length);
+            assertEquals(2, output[0].split("\n").length);
         }  
     }
 
