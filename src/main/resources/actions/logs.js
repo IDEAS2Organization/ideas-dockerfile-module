@@ -16,7 +16,7 @@ async function del() {
           "<fieldset>\
       <legend>Please select one of the following</legend>$content</fieldset>";
         var option =
-          '<input name="containerNames" type="checkbox" id="$value" value="$value"/> <label for="$value">$name</label></br>';
+          '<input name="containerNames" type="radio" id="$value" value="$value"/> <label for="$value">$name</label></br>';
         var uri =
           ModeManager.getBaseUri(
             ModeManager.calculateModelIdFromExt(
