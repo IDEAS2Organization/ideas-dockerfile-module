@@ -30,7 +30,7 @@ public class DockerfileOperationsTest {
 
     DockerfileOperations operations = new DockerfileOperations();
 
-    String username = "Username1";
+    String username = "Username1"; // Si one_user_mode está a true no afecta a nada aunque se siga pasando como parámetro.
     Map<String, String> documents = Map.of("Dockerfile", "FROM node:16.14.0-alpine3.15", "Dockerfile.local", "");
     private Boolean one_user_mode = Boolean.parseBoolean(System.getenv("ONE_USER_MODE"));
 
@@ -43,10 +43,12 @@ public class DockerfileOperationsTest {
     public void setup() throws IOException {
         System.out.println("==================================");
         System.out.println("START SETUP");
-        operations.executeCommand("docker run -d --privileged --name " + username + " docker:dind dockerd", "/");
-        operations.executeCommand("docker start " + username, "/");
 
         if (!one_user_mode) {
+            operations.executeCommand("docker run -d --privileged --name " + username + " docker:dind dockerd", "/");
+            operations.executeCommand("docker start " + username, "/");
+
+            // Contenedores para probar varios usuarios a la vez.
             operations.executeCommand("docker run -d --privileged --name test1 docker:dind dockerd", "/");
             operations.executeCommand("docker run -d --privileged --name test2 docker:dind dockerd", "/");
             operations.executeCommand("docker start test1", "/");
